@@ -63,3 +63,16 @@ Screenshots are generated from the disposable test installation. The theme scree
 - Other PHP versions, additional browsers, broader accessibility review and large knowledge indexes.
 
 This is a functioning proof of concept, not a claim of production readiness across untested infrastructure.
+
+## Published-release verification
+
+Release: https://github.com/cchatterton/expert/releases/tag/v0.1.0
+
+- Remote tag `v0.1.0` resolves to source commit `67f950640ef9ddea76c9a1ac9c03d91ec6d344ed`.
+- GitHub asset `expert.zip` was downloaded and matched the committed ZIP byte-for-byte.
+- SHA-256: `516942b1b84e72a19b5ff809c69f17d415ae45044e37d9537aab49aeb5afada5`.
+- In the disposable installation, installed version metadata was lowered to 0.0.9. The active theme discovered 0.1.0 through the real manifest and populated native WordPress theme update data.
+- `wp theme update expert` downloaded the real GitHub release and successfully upgraded it to 0.1.0 through WordPress's native upgrader.
+- Every installed theme file was then compared with the published ZIP and matched exactly.
+
+Final results: 78 integration assertions, nine updater assertions, three scheduler regression checks, browser membership/wizard/pause/resume checks, automated main-content accessibility checks, PHP/JavaScript syntax checks, ZIP installation and real native update installation passed.
