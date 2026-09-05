@@ -1,0 +1,37 @@
+const { chromium } = require('playwright');
+const fs = require('fs');
+async function accessibility(page, label) { await page.addScriptTag({path:'/tmp/expert-axe.min.js'}); const result=await page.evaluate(async()=>await axe.run(document.querySelector('#expert-main'),{runOnly:['wcag2a','wcag2aa','wcag21a','wcag21aa']})); if(result.violations.length) throw Error(label+': '+JSON.stringify(result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})))); console.log('PASS: '+label+' accessibility'); }
+(async () => {
+ const browser = await chromium.launch({headless:true,channel:'chrome'});
+ const page = await browser.newPage({viewport:{width:1440,height:1100}});
+ page.on('response', async response=>{if(response.url().includes('/expert/v1/')) console.log('API', response.status(), (await response.text()).slice(0,500));});
+ const errors=[]; page.on('pageerror', error=>errors.push(error.message));
+ await page.goto('http://localhost:8893/systems-expert/');
+ if(page.url()!=='http://localhost:8893/') throw Error('Visitor was not sent to core');
+ await page.getByRole('link',{name:'Log in',exact:true}).click();
+ await page.getByRole('textbox',{name:'Username or Email Address'}).fill('expert_test_admin');
+ await page.locator('#user_pass').fill(process.env.EXPERT_TEST_PASSWORD);
+ await page.getByRole('button',{name:'Log In',exact:true}).click();
+ await page.waitForURL('http://localhost:8893/');
+ await accessibility(page,'Directory'); await page.screenshot({path:'/tmp/expert-root.png',fullPage:true});
+ await page.setViewportSize({width:1200,height:900}); await page.screenshot({path:require('path').join(__dirname,'../expert/screenshot.png')}); await page.setViewportSize({width:1440,height:1100});
+ await page.getByRole('link',{name:'Systems Expert',exact:true}).click();
+ await page.getByRole('heading',{name:'What would you like to understand?'}).waitFor();
+ await accessibility(page,'Agent'); await page.screenshot({path:'/tmp/expert-agent.png',fullPage:true});
+ await page.locator('#expert-question').fill('How do electricity systems become sustainable?');
+ await page.getByRole('button',{name:'Ask the Expert →',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('[data-expert-route=chat] .expert-status').textContent.includes('unavailable'));
+ await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:'/tmp/expert-mobile.png',fullPage:true});
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);
+ if(overflow) throw Error('Mobile horizontal overflow');
+ await page.getByRole('link',{name:'Manage Agents',exact:true}).click();
+ await page.getByRole('heading',{name:'Add an Agent',exact:true}).waitFor();
+ await page.setViewportSize({width:1440,height:1100});
+ await page.screenshot({path:'/tmp/expert-admin.png',fullPage:true});
+ await page.locator('#agent-name').fill('Materials Expert'); await page.locator('#knowledge-area').fill('Circular material systems'); await page.getByRole('button',{name:'Create Agent',exact:true}).click(); await page.getByRole('link',{name:'Materials Expert',exact:true}).waitFor(); console.log('PASS: Browser wizard creates an Agent without visiting a subsite backend');
+ await page.getByRole('link',{name:'Materials Expert',exact:true}).click(); await page.getByRole('button',{name:'Pause learning',exact:true}).click(); await page.getByRole('row').filter({hasText:'Materials Expert'}).filter({hasText:'Paused'}).waitFor(); await page.getByRole('link',{name:'Materials Expert',exact:true}).click(); await page.getByRole('button',{name:'Resume learning',exact:true}).click(); await page.getByRole('row').filter({hasText:'Materials Expert'}).filter({hasText:'Growth'}).waitFor(); console.log('PASS: Network pause and resume actions');
+ if(errors.length) throw Error(errors.join('\n'));
+ console.log('PASS: Anonymous gate, core login, directory, Agent homepage, runtime error UI, 390px responsive layout, network admin, no page JS errors');
+ await browser.close();
+})();
