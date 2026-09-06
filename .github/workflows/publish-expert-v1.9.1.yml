@@ -58,3 +58,4 @@ jobs:
           git push
           gh release create v1.9.1 expert.zip --target main --title "Expert v1.9.1" --latest --notes "Repairs browser synthesis and adds automatic recovery for failed learning jobs."
 
+
