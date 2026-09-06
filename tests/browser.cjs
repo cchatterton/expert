@@ -28,7 +28,7 @@ async function accessibility(page, label) { await page.addScriptTag({path:'/tmp/
  await page.screenshot({path:'/tmp/expert-mobile.png',fullPage:true});
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);
  if(overflow) throw Error('Mobile horizontal overflow');
- await page.getByRole('link',{name:'Manage Agents',exact:true}).click();
+ await page.goto('http://localhost:8893/wp-admin/network/admin.php?page=expert-agents');
  await page.getByRole('heading',{name:'Add an Agent',exact:true}).waitFor();
  await page.setViewportSize({width:1440,height:1100});
  await page.screenshot({path:'/tmp/expert-admin.png',fullPage:true});

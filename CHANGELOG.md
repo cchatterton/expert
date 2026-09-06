@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 - 2026-09-06
+
+- Changed the network home mark to a solid chat bubble.
+- Removed Manage Agents and Log out from the front-end navigation.
+- Kept management and account controls in the native WordPress administration surfaces.
+
 ## 1.3.0 - 2026-09-06
 
 - Replaced the letter mark with a distinct Expert chat bubble.

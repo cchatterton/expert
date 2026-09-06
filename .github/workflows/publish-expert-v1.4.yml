@@ -1,0 +1,26 @@
+name: Publish Expert v1.4
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-expert-v1.4.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish Expert v1.4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view v1.4.0 >/dev/null 2>&1 || gh release create v1.4.0 expert.zip \
+            --target "${GITHUB_SHA}" \
+            --title "Expert v1.4" \
+            --latest \
+            --notes "The network home control is now a solid chat bubble. Manage Agents and Log out have been removed from front-end navigation and remain available through WordPress administration."

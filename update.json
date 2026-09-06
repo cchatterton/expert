@@ -1,4 +1,4 @@
 {
-  "version": "1.3.0",
-  "body": "The chat-bubble brand mark now returns to the main Expert homepage from every site. Agent navigation is simplified and Open questions is renamed Backlog."
+  "version": "1.4.0",
+  "body": "The network home control is now a solid chat bubble. Manage Agents and Log out have been removed from the front-end navigation and remain available through WordPress administration."
 }
