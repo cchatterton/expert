@@ -1,6 +1,6 @@
 # Expert
 
-Author: Techn · Version: 1.1.0 · Status: proof of concept · GPL v2 or later
+Author: Techn · Version: 1.2.0 · Status: proof of concept · GPL v2 or later
 
 Expert turns a WordPress Multisite network into a directory of autonomous subject matter Agents. Each begins with a name and a knowledge area. The theme owns the complete WordPress application: no companion plugin, AI plugin, vector plugin or scheduling plugin is required.
 
@@ -15,7 +15,7 @@ No one needs to visit an Agent backend. Administrators can review drafts, pause/
 
 ## Membership and access
 
-Anonymous visitors to an Agent are redirected to the core site's login-only landing page. Core login returns to the directory. Core-site members and super administrators can read and ask questions across all Expert sites. REST, feeds, normal templates, XML-RPC and comments follow the membership boundary. Subscriber membership grants use, not editing or network administration. Edit operations use current-blog WordPress capabilities and nonces.
+Anonymous visitors can view the core site's animated network overview and limited Agent catalogue. Agent names are not linked publicly, and every Agent page, archive, alternate view, REST route, feed, comment and interactive control remains behind the core membership boundary. Anonymous visits to an Agent redirect to the public directory; login returns members there. Subscriber membership grants use, not editing or network administration. Edit operations use current-blog WordPress capabilities and nonces.
 
 Use a normal same-network domain arrangement; arbitrary domain-mapped Agent sites need a separate single-sign-on design and are not supported in this proof of concept. WordPress serves uploaded media directly through the web server: if you later upload confidential files, enforce membership at the web-server/storage layer as well. The theme does not create private media downloads. Do not put authenticated HTML behind a public full-page cache; responses send private/no-store headers.
 

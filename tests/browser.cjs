@@ -7,8 +7,11 @@ async function accessibility(page, label) { await page.addScriptTag({path:'/tmp/
  page.on('response', async response=>{if(response.url().includes('/expert/v1/')) console.log('API', response.status(), (await response.text()).slice(0,500));});
  const errors=[]; page.on('pageerror', error=>errors.push(error.message));
  await page.goto('http://localhost:8893/systems-expert/');
- if(page.url()!=='http://localhost:8893/') throw Error('Visitor was not sent to core');
- await page.getByRole('link',{name:'Log in',exact:true}).click();
+ if(page.url()!=='http://localhost:8893/') throw Error('Visitor was not sent to public core homepage');
+ await page.getByRole('heading',{name:'Meet the Agents',exact:true}).waitFor();
+ if(await page.getByRole('link',{name:'Systems Expert',exact:true}).count()) throw Error('Public catalogue exposed an Agent browsing link');
+ await accessibility(page,'Public directory');
+ await page.getByRole('link',{name:'Log in to explore ↗',exact:true}).first().click();
  await page.getByRole('textbox',{name:'Username or Email Address'}).fill('expert_test_admin');
  await page.locator('#user_pass').fill(process.env.EXPERT_TEST_PASSWORD);
  await page.getByRole('button',{name:'Log In',exact:true}).click();

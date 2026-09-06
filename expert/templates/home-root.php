@@ -10,6 +10,7 @@ $expert_pieces = array_sum( array_map( static fn( $agent ) => absint( $agent['co
 $expert_active = count( array_filter( $expert_agents, static fn( $agent ) => 'Paused' !== ( $agent['mode'] ?? '' ) ) );
 $expert_colours = array( 'var(--expert-cyan)', 'var(--expert-blue)', 'var(--expert-lime)', 'var(--expert-amber)' );
 $expert_borders = array( 'solid', 'dashed', 'solid', 'dotted' );
+$expert_member  = expert_network_member();
 ?>
 <section class="expert-hero expert-network-hero">
 	<div class="expert-hero-copy">
@@ -62,7 +63,7 @@ $expert_borders = array( 'solid', 'dashed', 'solid', 'dotted' );
 	<?php endif; ?></div>
 	<div class="expert-grid">
 	<?php foreach ( $expert_agents as $expert_agent ) : ?>
-		<article class="expert-card"><p class="expert-eyebrow"><?php echo esc_html( $expert_agent['mode'] ); ?></p><h3><a href="<?php echo esc_url( $expert_agent['url'] ); ?>"><?php echo esc_html( $expert_agent['name'] ); ?></a></h3><p><?php echo esc_html( $expert_agent['area'] ); ?></p><p class="expert-muted"><?php echo esc_html( $expert_agent['description'] ); ?></p><div class="expert-card-meta"><span><?php echo esc_html( $expert_agent['count'] ); ?> <?php esc_html_e( 'knowledge pieces', 'expert' ); ?></span><span><?php echo esc_html( $expert_agent['last'] ? sprintf( __( 'Learned %s ago', 'expert' ), human_time_diff( $expert_agent['last'] ) ) : __( 'Preparing to learn', 'expert' ) ); ?></span></div><a class="expert-text-link" href="<?php echo esc_url( $expert_agent['url'] ); ?>"><?php esc_html_e( 'Ask this Agent ↗', 'expert' ); ?></a></article>
+		<article class="expert-card"><p class="expert-eyebrow"><?php echo esc_html( $expert_agent['mode'] ); ?></p><h3><?php if ( $expert_member ) : ?><a href="<?php echo esc_url( $expert_agent['url'] ); ?>"><?php echo esc_html( $expert_agent['name'] ); ?></a><?php else : ?><?php echo esc_html( $expert_agent['name'] ); ?><?php endif; ?></h3><p><?php echo esc_html( $expert_agent['area'] ); ?></p><p class="expert-muted"><?php echo esc_html( $expert_agent['description'] ); ?></p><div class="expert-card-meta"><span><?php echo esc_html( $expert_agent['count'] ); ?> <?php esc_html_e( 'knowledge pieces', 'expert' ); ?></span><span><?php echo esc_html( $expert_agent['last'] ? sprintf( __( 'Learned %s ago', 'expert' ), human_time_diff( $expert_agent['last'] ) ) : __( 'Preparing to learn', 'expert' ) ); ?></span></div><a class="expert-text-link" href="<?php echo esc_url( $expert_member ? $expert_agent['url'] : expert_core_login_url() ); ?>"><?php echo $expert_member ? esc_html__( 'Ask this Agent ↗', 'expert' ) : esc_html__( 'Log in to explore ↗', 'expert' ); ?></a></article>
 	<?php endforeach; ?>
 	<?php if ( ! $expert_agents ) : ?>
 		<p class="expert-empty"><?php esc_html_e( 'The first Agent is yet to begin. A network administrator can create one with a name and a knowledge area.', 'expert' ); ?></p>

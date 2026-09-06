@@ -3,7 +3,7 @@ Tags: education, knowledge, multisite
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ A self-contained, members-only WordPress Multisite theme for autonomous local-AI
 == Description ==
 Expert by Techn creates an Agent subsite from just a name and knowledge area.
 Network administrators manage setup, learning, publication and updates centrally.
-Core-site subscribers can use every Agent. Visitors must log in through the core.
+The animated core directory and Agent catalogue are public. Members log in to explore and interact.
 No companion or third-party WordPress plugins are required.
 
 == Installation ==
@@ -52,6 +52,9 @@ Local service operators control their own terms, logs and privacy practices.
 No AI data is sent to GitHub. No remote analytics, fonts or advertising scripts load.
 
 == Changelog ==
+= 1.2.0 =
+* Made the animated core homepage and Agent catalogue public while keeping all exploration and interaction member-only.
+
 = 1.1.0 =
 * Added Expert's refreshed visual system and live Agent-count atomic network animation.
 * Added visible update controls to the Network Admin theme row.

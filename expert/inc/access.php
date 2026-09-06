@@ -9,8 +9,15 @@ function expert_network_member() {
 function expert_core_login_url() {
 	return get_site_url( get_main_site_id(), 'wp-login.php', 'login' );
 }
+function expert_public_home_request() {
+	return is_main_site()
+		&& ( is_front_page() || is_home() )
+		&& ! is_feed()
+		&& ! is_search()
+		&& empty( $_GET['expert_view'] );
+}
 function expert_access_gate() {
-	if ( ! is_multisite() || expert_network_member() ) {
+	if ( ! is_multisite() || expert_network_member() || expert_public_home_request() ) {
 		return;
 	}
 	nocache_headers();
@@ -69,6 +76,9 @@ function expert_core_redirect_host( $hosts ) {
 }
 add_filter( 'allowed_redirect_hosts', 'expert_core_redirect_host' );
 function expert_member_robots( $robots ) {
+	if ( expert_public_home_request() && ! expert_network_member() ) {
+		return $robots;
+	}
 	$robots['noindex']  = true;
 	$robots['nofollow'] = true;
 	return $robots; }

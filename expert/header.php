@@ -21,5 +21,7 @@ if ( expert_network_member() ) :
 		?>
 		<a href="<?php echo esc_url( expert_admin_url() ); ?>"><?php esc_html_e( 'Manage Agents', 'expert' ); ?></a><?php endif; ?>
 <a href="<?php echo esc_url( wp_logout_url( get_home_url( get_main_site_id(), '/' ) ) ); ?>"><?php esc_html_e( 'Log out', 'expert' ); ?></a>
-</nav><?php endif; ?></div></header>
+</nav><?php else : ?>
+	<a class="expert-header-login" href="<?php echo esc_url( expert_core_login_url() ); ?>"><?php esc_html_e( 'Log in', 'expert' ); ?></a>
+<?php endif; ?></div></header>
 <main id="expert-main" class="expert-container">

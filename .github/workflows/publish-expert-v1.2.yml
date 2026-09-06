@@ -1,0 +1,26 @@
+name: Publish Expert v1.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-expert-v1.2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish Expert v1.2
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view v1.2.0 >/dev/null 2>&1 || gh release create v1.2.0 expert.zip \
+            --target "${GITHUB_SHA}" \
+            --title "Expert v1.2" \
+            --latest \
+            --notes "The animated Expert homepage and limited Agent catalogue are now public. Agent pages, alternate views, archives, feeds, menus, comments, REST routes and every interaction remain available only to logged-in network members."

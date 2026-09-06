@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 - 2026-09-06
+
+- Made the animated core homepage and limited Agent catalogue public.
+- Kept Agent pages, alternate views, archives, feeds, menus, comments, REST routes and all interactions behind network membership.
+- Replaced public Agent links with a login route and added a clear header login action.
+- Allowed public indexing only for the core homepage while retaining noindex protection elsewhere.
+
 ## 1.1.0 - 2026-09-06
 
 - Updated Expert's complete front-end visual system while retaining its existing behavior and distinct identity.
