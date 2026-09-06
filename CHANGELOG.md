@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.2 - 2026-09-06
+
+- Added automatic phone-compatible CPU/WASM inference when WebGPU cannot provide a compatible adapter.
+- Kept chat and learning private and browser-local on the fallback path.
+
 ## 1.6.1 - 2026-09-06
 
 - Clear legacy server-runtime failures after upgrading to browser-local AI.

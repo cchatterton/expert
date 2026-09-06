@@ -1,4 +1,4 @@
 {
-  "version": "1.6.1",
-  "body": "Clears obsolete server-runtime error state after upgrading to browser-local AI."
+  "version": "1.6.2",
+  "body": "Adds automatic local CPU/WASM inference when mobile WebGPU is unavailable."
 }
