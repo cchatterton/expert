@@ -3,7 +3,7 @@ Tags: education, knowledge, multisite
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.1.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,10 @@ Local service operators control their own terms, logs and privacy practices.
 No AI data is sent to GitHub. No remote analytics, fonts or advertising scripts load.
 
 == Changelog ==
+= 1.1.0 =
+* Added Expert's refreshed visual system and live Agent-count atomic network animation.
+* Added visible update controls to the Network Admin theme row.
+
 = 0.1.0 =
 * Initial theme-only Expert Multisite proof of concept.
 * Added network Agent creation, member access, local AI research and semantic knowledge.

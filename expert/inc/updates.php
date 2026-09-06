@@ -130,6 +130,27 @@ function expert_forced_update_check() {
 	}
 }
 add_action( 'admin_init', 'expert_forced_update_check' );
+
+/** Keep update controls visible where network administrators manage themes. */
+function expert_theme_action_links( $actions ) {
+	if ( ! is_network_admin() || ! current_user_can( 'update_themes' ) ) {
+		return $actions;
+	}
+	$actions['expert-manage'] = '<a href="' . esc_url( expert_admin_url() ) . '">' . esc_html__( 'Manage Expert', 'expert' ) . '</a>';
+	$actions['expert-update'] = '<a href="' . esc_url( network_admin_url( 'update-core.php?force-check=1' ) ) . '">' . esc_html__( 'Check for updates', 'expert' ) . '</a>';
+	return $actions;
+}
+add_filter( 'theme_action_links_expert', 'expert_theme_action_links' );
+
+function expert_theme_row_meta( $meta, $stylesheet ) {
+	if ( 'expert' !== $stylesheet || ! is_network_admin() || ! current_user_can( 'update_themes' ) ) {
+		return $meta;
+	}
+	$meta[] = '<a href="https://github.com/cchatterton/expert/releases" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Release notes', 'expert' ) . '</a>';
+	return $meta;
+}
+add_filter( 'theme_row_meta', 'expert_theme_row_meta', 10, 2 );
+
 function expert_upgraded( $upgrader, $options ) {
 	if ( 'theme' === ( $options['type'] ?? '' ) && 'update' === ( $options['action'] ?? '' ) ) {
 		expert_clear_update_cache();

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 - 2026-09-06
+
+- Updated Expert's complete front-end visual system while retaining its existing behavior and distinct identity.
+- Added the atomic network animation, with one orbit and one particle generated for every listed Agent.
+- Added live Agent, knowledge and network-state signals to the directory hero.
+- Added responsive and reduced-motion treatments for the new interface.
+- Added visible Manage Expert, Check for updates and Release notes links to the Network Admin theme row.
+
 ## 0.1.0 - 2026-09-05
 
 - Delivered Expert as one self-contained WordPress Multisite theme by Techn.

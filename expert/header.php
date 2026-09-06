@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <head><meta charset="<?php bloginfo( 'charset' ); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><?php wp_head(); ?></head>
 <body <?php body_class( 'expert-site' ); ?>><?php wp_body_open(); ?>
 <a class="expert-skip" href="#expert-main"><?php esc_html_e( 'Skip to content', 'expert' ); ?></a>
-<header class="expert-header"><div class="expert-container expert-header-inner"><a class="expert-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="expert-mark" aria-hidden="true">e</span><span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span></a>
+<header class="expert-header"><div class="expert-container expert-header-inner"><a class="expert-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="expert-mark" aria-hidden="true">E</span><span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span></a>
 <?php
 if ( expert_network_member() ) :
 	?>
