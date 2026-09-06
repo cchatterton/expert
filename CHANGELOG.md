@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.0 - 2026-09-06
+
+- Start local AI automatically for signed-in members whenever an Agent page is visible.
+- Added model download and preparation progress.
+- Reconnect after navigation, connectivity changes, page restoration and recoverable inference failures.
+- Let multiple active devices claim independent, rotated learning work so they increase aggregate learning throughput.
+- Added per-device cooldowns, locks and title-based update reuse to reduce duplicate learning output.
+
 ## 1.6.2 - 2026-09-06
 
 - Added automatic phone-compatible CPU/WASM inference when WebGPU cannot provide a compatible adapter.

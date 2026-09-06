@@ -65,9 +65,23 @@ function expert_browser_claim_token( $purpose, $token ) {
 	return is_array( $payload ) ? $payload : false;
 }
 
-function expert_browser_heartbeat_request() {
-	update_option( 'expert_browser_station', array( 'user' => get_current_user_id(), 'seen' => time() ), false );
-	return array( 'ok' => true, 'server_time' => time() );
+function expert_browser_device_id( $request ) {
+	return substr( sanitize_key( (string) ( $request['device'] ?? '' ) ), 0, 64 ) ?: 'device-' . get_current_user_id();
+}
+
+function expert_browser_heartbeat_request( $request ) {
+	$device   = expert_browser_device_id( $request );
+	$stations = get_option( 'expert_browser_stations', array() );
+	$now      = time();
+	foreach ( $stations as $id => $station ) {
+		if ( empty( $station['seen'] ) || (int) $station['seen'] < $now - 300 ) {
+			unset( $stations[ $id ] );
+		}
+	}
+	$stations[ $device ] = array( 'user' => get_current_user_id(), 'seen' => $now );
+	update_option( 'expert_browser_stations', $stations, false );
+	update_option( 'expert_browser_station', array( 'user' => get_current_user_id(), 'seen' => $now ), false );
+	return array( 'ok' => true, 'server_time' => $now, 'active_devices' => count( $stations ) );
 }
 
 function expert_browser_chat_context_request( $request ) {
@@ -151,10 +165,15 @@ function expert_browser_save_faq( $question, $answer, $sources ) {
 	return $id;
 }
 
-function expert_browser_learning_context() {
+function expert_browser_learning_context( $device = '' ) {
 	$agent    = get_option( 'expert_agent' );
 	$backlog  = get_posts( array( 'post_type' => 'expert_research', 'post_status' => 'publish', 'numberposts' => 3, 'meta_key' => '_expert_priority', 'orderby' => 'meta_value_num', 'order' => 'DESC' ) );
-	$evidence = expert_browser_evidence( '', 10 );
+	$evidence = expert_browser_evidence( '', 12 );
+	if ( count( $evidence ) > 2 && $device ) {
+		$offset   = hexdec( substr( hash( 'sha256', $device ), 0, 4 ) ) % count( $evidence );
+		$evidence = array_merge( array_slice( $evidence, $offset ), array_slice( $evidence, 0, $offset ) );
+	}
+	$evidence = array_slice( $evidence, 0, 8 );
 	return array(
 		'area'       => $agent['area'],
 		'subject'    => wp_strip_all_tags( get_post_field( 'post_content', $agent['subject'] ) ),
@@ -164,21 +183,29 @@ function expert_browser_learning_context() {
 	);
 }
 
-function expert_browser_learn_claim_request() {
+function expert_browser_learn_claim_request( $request ) {
 	$state = expert_state();
-	if ( $state['paused'] || $state['next_loop'] > time() ) {
+	if ( $state['paused'] ) {
 		return array( 'job' => false, 'next' => $state['next_loop'] );
 	}
-	$lock = expert_lock( 'browser_learning', 15 * MINUTE_IN_SECONDS );
+	$device   = expert_browser_device_id( $request );
+	$cooldown = get_transient( 'expert_browser_cooldown_' . $device );
+	if ( $cooldown ) {
+		return array( 'job' => false, 'next' => (int) $cooldown );
+	}
+	$lock_key = 'browser_learning_' . substr( hash( 'sha256', $device ), 0, 16 );
+	$lock = expert_lock( $lock_key, 15 * MINUTE_IN_SECONDS );
 	if ( ! $lock ) {
 		return array( 'job' => false, 'busy' => true );
 	}
-	$context = expert_browser_learning_context();
+	$context = expert_browser_learning_context( $device );
 	if ( count( $context['evidence'] ) < 2 ) {
-		expert_unlock( 'browser_learning', $lock );
+		expert_unlock( $lock_key, $lock );
 		return array( 'job' => false, 'needs_sources' => true );
 	}
-	$token = expert_browser_token( 'learn', array( 'lock' => $lock, 'context' => $context, 'started' => time() ) );
+	$interval = max( 60, (int) $state['interval'] );
+	set_transient( 'expert_browser_cooldown_' . $device, time() + $interval, $interval );
+	$token = expert_browser_token( 'learn', array( 'lock' => $lock, 'lock_key' => $lock_key, 'device' => $device, 'context' => $context, 'started' => time() ) );
 	return array( 'job' => true, 'token' => $token, 'context' => $context );
 }
 
@@ -199,7 +226,8 @@ function expert_browser_learn_commit_request( $request ) {
 		$error    = 'insufficient_evidence';
 		if ( $grounded ) {
 			$GLOBALS['expert_loop_uuid'] = wp_generate_uuid4();
-			$id = expert_save_knowledge( 'post', $title, $content, $sources );
+			$matching = get_posts( array( 'post_type' => 'post', 'post_status' => array( 'draft', 'publish' ), 'title' => $title, 'numberposts' => 1 ) );
+			$id = expert_save_knowledge( 'post', $title, $content, $sources, $matching ? $matching[0]->ID : 0 );
 			if ( is_wp_error( $id ) ) {
 				return $id;
 			}
@@ -218,7 +246,7 @@ function expert_browser_learn_commit_request( $request ) {
 		expert_browser_finish_loop( $issued['started'], $status, $error, sanitize_text_field( $result['topic'] ?? '' ) );
 		return array( 'saved' => 'completed' === $status, 'status' => $status );
 	} finally {
-		expert_unlock( 'browser_learning', $issued['lock'] );
+		expert_unlock( $issued['lock_key'], $issued['lock'] );
 		unset( $GLOBALS['expert_loop_uuid'] );
 	}
 }

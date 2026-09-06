@@ -1,4 +1,4 @@
 {
-  "version": "1.6.2",
-  "body": "Adds automatic local CPU/WASM inference when mobile WebGPU is unavailable."
+  "version": "1.7.0",
+  "body": "Adds automatic self-healing local AI, visible loading progress and cooperative multi-device learning."
 }

@@ -22,6 +22,7 @@ function expert_assets() {
 				'ready'    => __( 'Local AI ready', 'expert' ),
 				'unsupported' => __( 'WebGPU is unavailable on this device.', 'expert' ),
 				'mobileLoading' => __( 'Preparing phone-compatible local AI...', 'expert' ),
+				'recovering' => __( 'Local AI is reconnecting…', 'expert' ),
 				'working'  => __( 'Thinking…', 'expert' ),
 				'failed'   => __( 'The request could not be completed. Please try again.', 'expert' ),
 				'saved'    => __( 'Saved. Related knowledge will be reviewed shortly.', 'expert' ),
