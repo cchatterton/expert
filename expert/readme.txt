@@ -3,7 +3,7 @@ Tags: education, knowledge, multisite
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Local service operators control their own terms, logs and privacy practices.
 No AI data is sent to GitHub. No remote analytics, fonts or advertising scripts load.
 
 == Changelog ==
+= 1.5.0 =
+* Matched supported mobile browser chrome to Expert and added a persistent Agent learning-status signal.
+
 = 1.4.0 =
 * Made the home mark a solid chat bubble and removed front-end Manage Agents and Log out navigation items.
 

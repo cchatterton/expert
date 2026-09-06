@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0 - 2026-09-06
+
+- Added dark theme-colour metadata for supported mobile browsers and installed web-app surfaces.
+- Added a persistent Agent header signal for Learning now, next scheduled learning, Paused, Ready to learn and Needs attention states.
+- Derived active learning from the existing atomic loop lease without changing scheduler behavior.
+
 ## 1.4.0 - 2026-09-06
 
 - Changed the network home mark to a solid chat bubble.

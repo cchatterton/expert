@@ -1,4 +1,4 @@
 {
-  "version": "1.4.0",
-  "body": "The network home control is now a solid chat bubble. Manage Agents and Log out have been removed from the front-end navigation and remain available through WordPress administration."
+  "version": "1.5.0",
+  "body": "Supported mobile browser chrome now matches Expert's dark theme. Agent headers show Learning now, next learning time, Paused, Ready to learn or Needs attention."
 }
