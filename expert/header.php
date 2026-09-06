@@ -12,7 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( expert_is_agent() ) :
 	$expert_header_state = expert_state();
 	$expert_loop_lock    = get_option( 'expert_lock_loop' );
-	$expert_is_learning  = $expert_loop_lock && (int) $expert_loop_lock > time();
+	$expert_browser_lock = get_option( 'expert_lock_browser_learning' );
+	$expert_station      = get_option( 'expert_browser_station', array() );
+	$expert_is_learning  = ( $expert_loop_lock && (int) $expert_loop_lock > time() ) || ( $expert_browser_lock && (int) $expert_browser_lock > time() );
+	$expert_station_live = ! empty( $expert_station['seen'] ) && (int) $expert_station['seen'] > time() - 150;
 	if ( $expert_is_learning ) {
 		$expert_presence_label = __( 'Learning now', 'expert' );
 		$expert_presence_class = 'learning';
@@ -22,11 +25,14 @@ if ( expert_is_agent() ) :
 	} elseif ( 'Error' === $expert_header_state['mode'] ) {
 		$expert_presence_label = __( 'Needs attention', 'expert' );
 		$expert_presence_class = 'error';
+	} elseif ( ! $expert_station_live ) {
+		$expert_presence_label = __( 'Waiting for local AI', 'expert' );
+		$expert_presence_class = 'paused';
 	} elseif ( $expert_header_state['next_loop'] > time() ) {
 		$expert_presence_label = sprintf( __( 'Next learning in %s', 'expert' ), human_time_diff( time(), $expert_header_state['next_loop'] ) );
 		$expert_presence_class = 'ready';
 	} else {
-		$expert_presence_label = __( 'Ready to learn', 'expert' );
+		$expert_presence_label = __( 'Queued for local learning', 'expert' );
 		$expert_presence_class = 'ready';
 	}
 	?>

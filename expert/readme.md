@@ -1,13 +1,13 @@
 # Expert
 
-Author: Techn · Version: 1.5.0 · Status: proof of concept · GPL v2 or later
+Author: Techn · Version: 1.6.0 · Status: proof of concept · GPL v2 or later
 
 Expert turns a WordPress Multisite network into a directory of autonomous subject matter Agents. Each begins with a name and a knowledge area. The theme owns the complete WordPress application: no companion plugin, AI plugin, vector plugin or scheduling plugin is required.
 
 ## Start here
 
 1. On an existing WordPress Multisite installation, upload `expert.zip` in Network Admin → Themes. Network-enable it and activate Expert on the core site **once**. WordPress does not execute an inactive theme, so network enablement alone cannot start its code.
-2. Go to Network Admin → Expert Agents → Network setup and settings. Set the loopback AI URL, text and embedding model identifiers, and local discovery URL. Use the health/models check. These are network-wide infrastructure settings, not per-Agent setup.
+2. Visit an Agent in a current desktop Chrome browser and select **Enable local AI**. The first use downloads a small quantized model; later visits reuse the browser cache.
 3. Select **Add an Agent**, enter **Agent Name** and **Knowledge Area**, then **Create Agent**. Everything else is automatic: unique site address, subsite creation, theme activation, Agent account, subject description, native content types, navigation, permalinks and first learning schedule.
 4. Add people as subscribers to the **core site** using WordPress's existing Users screen. They can use every Agent without being separately added to each subsite.
 
@@ -19,9 +19,17 @@ Anonymous visitors can view the core site's animated network overview and limite
 
 Use a normal same-network domain arrangement; arbitrary domain-mapped Agent sites need a separate single-sign-on design and are not supported in this proof of concept. WordPress serves uploaded media directly through the web server: if you later upload confidential files, enforce membership at the web-server/storage layer as well. The theme does not create private media downloads. Do not put authenticated HTML behind a public full-page cache; responses send private/no-store headers.
 
-## Runtime contract
+## Browser-local AI
 
-The local runtime is an operating-system service, not a WordPress plugin. Bind it to loopback. Default base URL is `http://127.0.0.1:8765`. Only `127.0.0.1`, `localhost` and `::1` are accepted; credentials, query strings, fragments and base paths are rejected. Requests never follow redirects. `localhost` is pinned to the literal IPv4 loopback address.
+Expert 1.6 runs chat and learning inference on an opted-in member device through WebGPU. The model is downloaded by the browser on first use and cached in IndexedDB. Questions and supplied evidence are processed on the device. WordPress issues short-lived jobs, validates citations against the issued evidence and owns the durable Agent memory. No AI-provider account or key is required.
+
+The learning station only works while an opted-in Agent tab is visible. Jobs wait safely while no station is connected. Chat loads the same cached model on demand. A current desktop Chrome browser is recommended; unsupported devices receive an explicit message rather than a cloud fallback.
+
+Browser-local learning synthesises stored Agent sources and backlog questions. It does not pretend the language model can browse: administrators or members must add source records before a cycle can create a grounded perspective. At least two stored evidence records must support a learning result.
+
+## Legacy runtime contract
+
+The earlier loopback adapter remains in the codebase for data and upgrade compatibility, but browser-local mode no longer schedules it. Its former contract was:
 
 Required endpoints:
 

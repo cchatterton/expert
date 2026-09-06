@@ -70,6 +70,23 @@ function expert_routes() {
 			)
 		);
 	}
+	foreach ( array(
+		'local/heartbeat'   => array( 'POST', 'expert_browser_heartbeat_request' ),
+		'local/chat'        => array( 'POST', 'expert_browser_chat_context_request' ),
+		'local/chat/commit' => array( 'POST', 'expert_browser_chat_commit_request' ),
+		'local/learn'       => array( 'POST', 'expert_browser_learn_claim_request' ),
+		'local/learn/commit'=> array( 'POST', 'expert_browser_learn_commit_request' ),
+	) as $route => $handler ) {
+		register_rest_route(
+			'expert/v1',
+			'/' . $route,
+			array(
+				'methods'             => $handler[0],
+				'callback'            => $handler[1],
+				'permission_callback' => 'expert_member_permission',
+			)
+		);
+	}
 	register_rest_route(
 		'expert/v1',
 		'/frontend-edit',
@@ -100,7 +117,7 @@ function expert_search_request( $request ) {
 	if ( ! expert_rate_limit() ) {
 		return new WP_Error( 'rate_limit', __( 'Please wait a minute before trying again.', 'expert' ), array( 'status' => 429 ) );
 	}
-	$results = expert_retrieve( $request['message'], array( 'post', 'expert_source', 'expert_faq', 'comment' ), 10 );
+	$results = expert_browser_ai_enabled() ? expert_browser_evidence( $request['message'], 10 ) : expert_retrieve( $request['message'], array( 'post', 'expert_source', 'expert_faq', 'comment' ), 10 );
 	if ( is_wp_error( $results ) ) {
 		return $results;
 	}

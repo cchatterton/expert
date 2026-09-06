@@ -4,6 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 function expert_index( $id, $type = 'post' ) {
+	// Browser-local mode retrieves evidence directly from WordPress. Do not call
+	// the retired server-side model runtime or report misleading index failures.
+	if ( function_exists( 'expert_browser_ai_enabled' ) && expert_browser_ai_enabled() ) {
+		return true;
+	}
+
 	global $wpdb;
 	$table = $wpdb->base_prefix . 'expert_embeddings';
 	$blog  = get_current_blog_id();

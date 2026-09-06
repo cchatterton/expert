@@ -1,4 +1,4 @@
 {
-  "version": "1.5.0",
-  "body": "Supported mobile browser chrome now matches Expert's dark theme. Agent headers show Learning now, next learning time, Paused, Ready to learn or Needs attention."
+  "version": "1.6.0",
+  "body": "Adds opt-in browser-local AI for grounded Agent chat and persistent learning, with WordPress-owned memory and clear learning-station status."
 }

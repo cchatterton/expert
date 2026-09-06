@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.0 - 2026-09-06
+
+- Added explicit per-device consent for private browser-local AI.
+- Added cached WebGPU inference for grounded Agent chat without an AI-provider account.
+- Added leased browser learning jobs that synthesise at least two stored evidence records and commit only server-validated citations.
+- Kept durable Agent memory, FAQs, backlog, revisions, timelines and loop telemetry in WordPress.
+- Replaced misleading runtime states with Waiting for local AI, Learning now and Queued for local learning.
+- Disabled obsolete server-runtime cron dispatch while retaining its code for upgrade compatibility.
+
 ## 1.5.0 - 2026-09-06
 
 - Added dark theme-colour metadata for supported mobile browsers and installed web-app surfaces.

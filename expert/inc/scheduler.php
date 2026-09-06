@@ -10,6 +10,9 @@ function expert_network_tick() {
 	if ( ! wp_next_scheduled( 'expert_network_tick' ) ) {
 		wp_schedule_single_event( time() + 60, 'expert_network_tick' );
 	}
+	if ( function_exists( 'expert_browser_ai_enabled' ) && expert_browser_ai_enabled() ) {
+		return;
+	}
 	// Every active Expert site can wake the network; a root-site lease serialises dispatch.
 	$network_root = get_main_site_id();
 	switch_to_blog( $network_root );

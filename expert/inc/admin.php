@@ -82,9 +82,10 @@ function expert_admin_action() {
 					update_option( 'expert_state', $state, false );
 					expert_event( 'agent_' . $action, 0, $action, 'Human' );
 				} elseif ( 'run' === $action ) {
-					if ( ! $state['paused'] && ! wp_next_scheduled( 'expert_manual_loop' ) ) {
-									wp_schedule_single_event( time(), 'expert_manual_loop' );
-									spawn_cron();
+					if ( ! $state['paused'] ) {
+						$state['next_loop'] = time();
+						update_option( 'expert_state', $state, false );
+						expert_event( 'loop_queued', 0, __( 'The next browser-local learning station will claim this job.', 'expert' ), 'Human' );
 					}
 				} elseif ( 'agent_settings' === $action ) {
 					$agent = get_option( 'expert_agent' );
@@ -196,7 +197,7 @@ function expert_admin_page() {
 	submit_button( __( 'Create Agent', 'expert' ) );
 	echo '</form></section>';
 	echo '<section class="expert-panel"><h2>' . esc_html__( 'Your Agents', 'expert' ) . '</h2><div class="expert-table-scroll"><table class="widefat striped"><thead><tr>';
-	foreach ( array( 'Agent', 'Knowledge Area', 'Knowledge pieces', 'Mode', 'Loop frequency', 'Average engagement / loop', 'Engagement / hour', 'Trend', 'Last loop', 'Next loop', 'Runtime' ) as $heading ) {
+	foreach ( array( 'Agent', 'Knowledge Area', 'Knowledge pieces', 'Mode', 'Loop frequency', 'Average engagement / loop', 'Engagement / hour', 'Trend', 'Last loop', 'Next loop', 'Local AI' ) as $heading ) {
 		echo '<th>' . esc_html( $heading ) . '</th>';
 	}
 	echo '</tr></thead><tbody>';
@@ -209,9 +210,10 @@ function expert_admin_page() {
 			}
 			$agent   = get_option( 'expert_agent' );
 			$state   = expert_state();
-			$runtime = get_option( 'expert_runtime_status' );
+			$station = get_option( 'expert_browser_station', array() );
+			$runtime = ! empty( $station['seen'] ) && (int) $station['seen'] > time() - 150 ? 'Connected' : 'Waiting';
 			echo '<tr><td><a href="' . esc_url( add_query_arg( 'agent', $site->blog_id, expert_admin_url() ) ) . '">' . esc_html( $agent['name'] ) . '</a></td>';
-			foreach ( array( $agent['area'], expert_knowledge_count(), $state['mode'], round( $state['interval'] / 60 ) . ' min', round( $state['average'], 2 ), round( $state['per_hour'], 2 ), round( $state['trend'], 2 ), $state['last_loop'] ? gmdate( 'Y-m-d H:i', $state['last_loop'] ) . ' UTC' : 'Not yet', gmdate( 'Y-m-d H:i', $state['next_loop'] ) . ' UTC', $runtime ? ( $runtime['ok'] ? 'Available' : 'Unavailable' ) : 'Not checked' ) as $value ) {
+			foreach ( array( $agent['area'], expert_knowledge_count(), $state['mode'], round( $state['interval'] / 60 ) . ' min', round( $state['average'], 2 ), round( $state['per_hour'], 2 ), round( $state['trend'], 2 ), $state['last_loop'] ? gmdate( 'Y-m-d H:i', $state['last_loop'] ) . ' UTC' : 'Not yet', gmdate( 'Y-m-d H:i', $state['next_loop'] ) . ' UTC', $runtime ) as $value ) {
 				echo '<td>' . esc_html( $value ) . '</td>';
 			}
 			echo '</tr>';
@@ -232,13 +234,9 @@ function expert_admin_page() {
 			restore_current_blog();
 		}
 	}
-	echo '<details class="expert-panel"' . ( ! $settings['text_model'] ? ' open' : '' ) . '><summary>' . esc_html__( 'Network setup and settings', 'expert' ) . '</summary><p>' . esc_html__( 'Connect your local reasoning and search services once. These settings apply to every Agent.', 'expert' ) . '</p>';
+	echo '<details class="expert-panel"><summary>' . esc_html__( 'Network setup and settings', 'expert' ) . '</summary><p>' . esc_html__( 'Local AI runs with permission in a member browser. Models are cached on that device; Agent memory remains in WordPress.', 'expert' ) . '</p>';
 	expert_admin_form_start( 'settings' );
 	$labels = array(
-		'runtime_url'      => 'Local AI URL',
-		'text_model'       => 'Text model',
-		'embedding_model'  => 'Embedding model',
-		'discovery_url'    => 'Local search URL (SearXNG-compatible)',
 		'growth_threshold' => 'Growth knowledge threshold',
 		'growth_interval'  => 'Growth interval (seconds)',
 		'steady_interval'  => 'Steady interval (seconds)',
@@ -256,11 +254,6 @@ function expert_admin_page() {
 	echo '<p><label for="publishing">' . esc_html__( 'Default publication', 'expert' ) . '</label><select id="publishing" name="publishing"><option value="draft"' . selected( $settings['publishing'], 'draft', false ) . '>' . esc_html__( 'Draft for review', 'expert' ) . '</option><option value="publish"' . selected( $settings['publishing'], 'publish', false ) . '>' . esc_html__( 'Auto publish', 'expert' ) . '</option></select></p>';
 	submit_button( __( 'Save network settings', 'expert' ) );
 	echo '</form>';
-	expert_admin_button( 'health', __( 'Check local services and models', 'expert' ) );
-	$check = get_site_option( 'expert_runtime_check' );
-	if ( $check ) {
-		echo '<pre>' . esc_html( wp_json_encode( $check, JSON_PRETTY_PRINT ) ) . '</pre>';
-	}
 	echo '</details><section class="expert-panel"><h2>' . esc_html__( 'Theme updates', 'expert' ) . '</h2><p>Expert ' . esc_html( EXPERT_VERSION ) . ' · <a href="https://github.com/cchatterton/expert">GitHub</a></p>';
 	expert_admin_button( 'updates', __( 'Check for updates', 'expert' ) );
 	echo '<p><a href="' . esc_url( network_admin_url( 'update-core.php' ) ) . '">' . esc_html__( 'Open WordPress updates', 'expert' ) . '</a></p></section></div>';
@@ -270,7 +263,7 @@ function expert_admin_detail( $id ) {
 	$state = expert_state();
 	echo '<section class="expert-panel"><h2>' . esc_html( $agent['name'] ) . '</h2><p>' . esc_html( get_post_field( 'post_content', $agent['subject'] ) ) . '</p><p><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Visit Agent', 'expert' ) . '</a></p><div class="expert-actions">';
 	expert_admin_button( $state['paused'] ? 'resume' : 'pause', $state['paused'] ? __( 'Resume learning', 'expert' ) : __( 'Pause learning', 'expert' ), $id );
-	expert_admin_button( 'run', __( 'Run next loop now', 'expert' ), $id );
+	expert_admin_button( 'run', __( 'Queue next local loop', 'expert' ), $id );
 	echo '</div>';
 	expert_admin_form_start( 'agent_settings', $id );
 	echo '<p><label for="agent-publishing">' . esc_html__( 'Publication override', 'expert' ) . '</label><select id="agent-publishing" name="publishing">';

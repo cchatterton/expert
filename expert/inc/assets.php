@@ -13,7 +13,12 @@ function expert_assets() {
 			array(
 				'api'      => rest_url( 'expert/v1/' ),
 				'nonce'    => wp_create_nonce( 'wp_rest' ),
+				'webllm'   => 'https://esm.run/@mlc-ai/web-llm@0.2.84',
+				'model'    => 'SmolLM2-360M-Instruct-q4f32_1-MLC',
 				'objectId' => is_singular() ? get_queried_object_id() : 0,
+				'loading'  => __( 'Preparing local AI...', 'expert' ),
+				'ready'    => __( 'Local AI ready', 'expert' ),
+				'unsupported' => __( 'This device does not provide WebGPU. Use a current desktop Chrome browser for local AI.', 'expert' ),
 				'working'  => __( 'Thinking…', 'expert' ),
 				'failed'   => __( 'The request could not be completed. Please try again.', 'expert' ),
 				'saved'    => __( 'Saved. Related knowledge will be reviewed shortly.', 'expert' ),
