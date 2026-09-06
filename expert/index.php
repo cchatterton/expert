@@ -1,7 +1,7 @@
 <?php if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } get_header(); ?>
-<section class="expert-section"><h1><?php echo esc_html( is_search() ? sprintf( __( 'Search: %s', 'expert' ), get_search_query() ) : ( is_archive() ? get_the_archive_title() : __( 'Thinking and knowledge', 'expert' ) ) ); ?></h1>
+<section class="expert-section"><h1><?php echo esc_html( is_search() ? sprintf( __( 'Search: %s', 'expert' ), get_search_query() ) : ( is_archive() ? wp_strip_all_tags( get_the_archive_title() ) : __( 'Thinking and knowledge', 'expert' ) ) ); ?></h1>
 <?php
 if ( is_post_type_archive( 'expert_research' ) ) :
 	?>

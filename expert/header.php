@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <head><meta charset="<?php bloginfo( 'charset' ); ?>"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#020712"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><?php wp_head(); ?></head>
 <body <?php body_class( 'expert-site' ); ?>><?php wp_body_open(); ?>
 <a class="expert-skip" href="#expert-main"><?php esc_html_e( 'Skip to content', 'expert' ); ?></a>
-<header class="expert-header"><div class="expert-container expert-header-inner"><a class="expert-brand" href="<?php echo esc_url( get_home_url( get_main_site_id(), '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Return to the Expert home page', 'expert' ); ?>"><span class="expert-mark" aria-hidden="true"></span><span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span></a>
+<header class="expert-header"><div class="expert-container expert-header-inner"><div class="expert-identity"><a class="expert-home-mark" href="<?php echo esc_url( get_home_url( get_main_site_id(), '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Return to the Expert home page', 'expert' ); ?>"><span class="expert-mark" aria-hidden="true"></span></a><?php if ( expert_is_agent() ) : ?><a class="expert-brand expert-agent-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Return to this Agent’s home page', 'expert' ); ?>"><svg class="expert-robot-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v3h3.5A3.5 3.5 0 0 1 20 8.5V18a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5A3.5 3.5 0 0 1 7.5 5H11V2ZM7.5 7A1.5 1.5 0 0 0 6 8.5V17h12V8.5A1.5 1.5 0 0 0 16.5 7h-9ZM8 10h2v2H8v-2Zm6 0h2v2h-2v-2Zm-5 4h6v2H9v-2Z"/></svg><span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span></a><?php else : ?><a class="expert-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span></a><?php endif; ?></div>
 <?php
 if ( expert_is_agent() ) :
 	$expert_header_state = expert_state();
@@ -17,7 +17,7 @@ if ( expert_is_agent() ) :
 	$expert_is_learning  = ( $expert_loop_lock && (int) $expert_loop_lock > time() ) || ( $expert_browser_lock && (int) $expert_browser_lock > time() );
 	$expert_station_live = ! empty( $expert_station['seen'] ) && (int) $expert_station['seen'] > time() - 150;
 	if ( $expert_is_learning ) {
-		$expert_presence_label = __( 'Learning now', 'expert' );
+		$expert_presence_label = __( 'Thinking now', 'expert' );
 		$expert_presence_class = 'learning';
 	} elseif ( $expert_header_state['paused'] ) {
 		$expert_presence_label = __( 'Paused', 'expert' );
@@ -26,13 +26,13 @@ if ( expert_is_agent() ) :
 		$expert_presence_label = __( 'Needs attention', 'expert' );
 		$expert_presence_class = 'error';
 	} elseif ( ! $expert_station_live ) {
-		$expert_presence_label = __( 'Waiting for local AI', 'expert' );
+		$expert_presence_label = __( 'Waking up', 'expert' );
 		$expert_presence_class = 'paused';
 	} elseif ( $expert_header_state['next_loop'] > time() ) {
-		$expert_presence_label = sprintf( __( 'Next learning in %s', 'expert' ), human_time_diff( time(), $expert_header_state['next_loop'] ) );
+		$expert_presence_label = sprintf( __( 'Next reflection in %s', 'expert' ), human_time_diff( time(), $expert_header_state['next_loop'] ) );
 		$expert_presence_class = 'ready';
 	} else {
-		$expert_presence_label = __( 'Queued for local learning', 'expert' );
+		$expert_presence_label = __( 'Ready to explore', 'expert' );
 		$expert_presence_class = 'ready';
 	}
 	?>

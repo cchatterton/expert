@@ -1,4 +1,4 @@
 {
-  "version": "1.8.0",
-  "body": "Restores autonomous backlog-first web research, followed by independent learning when no relevant backlog remains."
+  "version": "1.9.0",
+  "body": "Adds distinct network and Agent home controls, fixes archive headings and presents Agent activity without implementation jargon."
 }

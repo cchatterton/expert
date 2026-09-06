@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.0 - 2026-09-06
+
+- The chat bubble now returns to the main site while a robot icon and Agent name return to the current Agent home.
+- Removed escaped archive-title markup from visible headings.
+- Replaced front-end implementation language with natural Agent activity and growth states.
+
 ## 1.8.0 - 2026-09-06
 
 - Unanswered useful questions enter the research backlog.

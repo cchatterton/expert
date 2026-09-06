@@ -1,6 +1,6 @@
 # Expert
 
-Author: Techn · Version: 1.8.0 · Status: proof of concept · GPL v2 or later
+Author: Techn · Version: 1.9.0 · Status: proof of concept · GPL v2 or later
 
 Expert turns a WordPress Multisite network into a directory of autonomous subject matter Agents. Each begins with a name and a knowledge area. The theme owns the complete WordPress application: no companion plugin, AI plugin, vector plugin or scheduling plugin is required.
 
