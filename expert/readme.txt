@@ -3,7 +3,7 @@ Tags: education, knowledge, multisite
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,11 +48,16 @@ Research: fetches robots.txt and bounded HTML/plain-text pages from public sourc
 GitHub: requests release metadata and downloads theme packages during update checks.
 GitHub terms: https://docs.github.com/en/site-policy/github-terms/github-terms-of-service
 GitHub privacy: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
+Bing terms: https://www.microsoft.com/en-us/servicesagreement
+Bing privacy: https://privacy.microsoft.com/en-us/privacystatement
 SearXNG project: https://docs.searxng.org/
 Local service operators control their own terms, logs and privacy practices.
 No AI data is sent to GitHub. No remote analytics, fonts or advertising scripts load.
 
 == Changelog ==
+= 1.8.0 =
+* Restores autonomous backlog-first research and independent learning through bounded public-web discovery.
+
 = 1.7.0 =
 * Adds automatic self-healing local AI, progress reporting and cooperative multi-device learning.
 

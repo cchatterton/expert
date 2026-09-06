@@ -1,6 +1,6 @@
 # Expert
 
-Author: Techn · Version: 1.7.0 · Status: proof of concept · GPL v2 or later
+Author: Techn · Version: 1.8.0 · Status: proof of concept · GPL v2 or later
 
 Expert turns a WordPress Multisite network into a directory of autonomous subject matter Agents. Each begins with a name and a knowledge area. The theme owns the complete WordPress application: no companion plugin, AI plugin, vector plugin or scheduling plugin is required.
 
@@ -21,7 +21,7 @@ Use a normal same-network domain arrangement; arbitrary domain-mapped Agent site
 
 ## Browser-local AI
 
-Expert 1.7 runs chat and learning inference automatically on signed-in member devices through WebGPU or a phone-compatible CPU/WASM fallback. The model is downloaded by the browser on first use and cached locally. Questions and supplied evidence are processed on the device. WordPress issues short-lived jobs, coordinates multiple devices, validates citations against the issued evidence and owns the durable Agent memory. No AI-provider account or key is required.
+Expert 1.8 runs chat and learning inference automatically on signed-in member devices through WebGPU or a phone-compatible CPU/WASM fallback. Unanswered useful questions enter the backlog. Frequency-controlled cycles research relevant backlog work first, then pursue independent learning when the backlog is empty. WordPress performs bounded public-web discovery and retrieval; private synthesis remains on the device. WordPress coordinates multiple devices, validates citations and owns durable Agent memory. No AI-provider account or key is required.
 
 The learning station only works while an opted-in Agent tab is visible. Jobs wait safely while no station is connected. Chat loads the same cached model on demand. A current desktop Chrome browser is recommended; unsupported devices receive an explicit message rather than a cloud fallback.
 

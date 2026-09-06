@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0 - 2026-09-06
+
+- Unanswered useful questions enter the research backlog.
+- Each frequency-controlled cycle researches the highest-priority backlog question first and tests its relevance to the Agent boundary.
+- When no suitable backlog remains, the Agent selects an independent learning angle.
+- Added autonomous public-web discovery and bounded source retrieval before local two-source synthesis.
+
 ## 1.7.0 - 2026-09-06
 
 - Start local AI automatically for signed-in members whenever an Agent page is visible.

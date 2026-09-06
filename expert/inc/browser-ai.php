@@ -183,6 +183,57 @@ function expert_browser_learning_context( $device = '' ) {
 	);
 }
 
+/** Backlog-first discovery, falling back to independent learning when the backlog is empty. */
+function expert_browser_self_source( $device ) {
+	$agent   = get_option( 'expert_agent' );
+	$backlog = get_posts( array( 'post_type' => 'expert_research', 'post_status' => 'publish', 'numberposts' => 1, 'meta_key' => '_expert_priority', 'orderby' => 'meta_value_num', 'order' => 'DESC', 'meta_query' => array( array( 'key' => '_expert_status', 'value' => array( 'Candidate', 'Queued', 'Deferred' ), 'compare' => 'IN' ) ) ) );
+	if ( $backlog ) {
+		$topic = $backlog[0]->post_title;
+		$backlog_id = $backlog[0]->ID;
+		update_post_meta( $backlog[0]->ID, '_expert_status', 'Researching' );
+		update_post_meta( $backlog[0]->ID, '_expert_last_considered', gmdate( 'c' ) );
+	} else {
+		$backlog_id = 0;
+		$angles = array( 'current primary guidance', 'recent developments', 'common misconceptions', 'evidence and best practices' );
+		$angle  = $angles[ hexdec( substr( hash( 'sha256', $device . gmdate( 'Y-m-d-H' ) ), 0, 4 ) ) % count( $angles ) ];
+		$topic  = $agent['area'] . ' ' . $angle;
+	}
+	$candidates = expert_discover( $topic );
+	if ( is_wp_error( $candidates ) ) {
+		return array( 'topic' => $topic, 'backlog_id' => $backlog_id );
+	}
+	$added = 0;
+	foreach ( $candidates as $candidate ) {
+		$url = $candidate['url'] ?? '';
+		if ( ! expert_public_url( $url ) ) {
+			continue;
+		}
+		$normal = expert_normalise_url( $url );
+		if ( get_posts( array( 'post_type' => 'expert_source', 'post_status' => 'any', 'numberposts' => 1, 'meta_key' => '_expert_canonical', 'meta_value' => $normal ) ) ) {
+			continue;
+		}
+		$source = expert_fetch_source( $candidate['url'] );
+		if ( is_wp_error( $source ) || expert_source_duplicate( $source ) ) {
+			continue;
+		}
+		$summary = wp_trim_words( sanitize_textarea_field( $source['text'] ), 120 );
+		$id = expert_save_knowledge( 'expert_source', $source['title'], $summary );
+		if ( is_wp_error( $id ) ) {
+			continue;
+		}
+		foreach ( array( 'url', 'canonical', 'publisher', 'author', 'published', 'retrieved', 'type', 'hash' ) as $key ) {
+			update_post_meta( $id, '_expert_' . $key, sanitize_text_field( (string) ( $source[ $key ] ?? '' ) ) );
+		}
+		update_post_meta( $id, '_expert_topic', $topic );
+		update_post_meta( $id, '_expert_browser_discovered', 1 );
+		expert_event( 'source_discovered', $id, __( 'The Agent independently found and stored a bounded source for local review.', 'expert' ), 'Agent' );
+		if ( ++$added >= 2 ) {
+			break;
+		}
+	}
+	return array( 'topic' => $topic, 'backlog_id' => $backlog_id );
+}
+
 function expert_browser_learn_claim_request( $request ) {
 	$state = expert_state();
 	if ( $state['paused'] ) {
@@ -198,8 +249,14 @@ function expert_browser_learn_claim_request( $request ) {
 	if ( ! $lock ) {
 		return array( 'job' => false, 'busy' => true );
 	}
+	$selection = expert_browser_self_source( $device );
 	$context = expert_browser_learning_context( $device );
+	$context['research_topic'] = $selection['topic'];
+	$context['selected_backlog_id'] = $selection['backlog_id'];
 	if ( count( $context['evidence'] ) < 2 ) {
+		if ( $selection['backlog_id'] ) {
+			update_post_meta( $selection['backlog_id'], '_expert_status', 'Deferred' );
+		}
 		expert_unlock( $lock_key, $lock );
 		return array( 'job' => false, 'needs_sources' => true );
 	}
@@ -240,10 +297,17 @@ function expert_browser_learn_commit_request( $request ) {
 				update_post_meta( $backlog_id, '_expert_status', 'Answered' );
 				update_post_meta( $backlog_id, '_expert_related', array( $id ) );
 			}
+			$selected_backlog = absint( $context['selected_backlog_id'] ?? 0 );
+			if ( $selected_backlog && $selected_backlog !== $backlog_id ) {
+				update_post_meta( $selected_backlog, '_expert_status', 'Deferred' );
+			}
 			$status = 'completed';
 			$error  = '';
 		}
 		expert_browser_finish_loop( $issued['started'], $status, $error, sanitize_text_field( $result['topic'] ?? '' ) );
+		if ( 'completed' !== $status && ! empty( $context['selected_backlog_id'] ) ) {
+			update_post_meta( $context['selected_backlog_id'], '_expert_status', 'Deferred' );
+		}
 		return array( 'saved' => 'completed' === $status, 'status' => $status );
 	} finally {
 		expert_unlock( $issued['lock_key'], $issued['lock'] );

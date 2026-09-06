@@ -160,6 +160,9 @@ function expert_normalise_url( $url ) {
 }
 function expert_discover( $topic ) {
 	expert_budget( 'searches' );
+	if ( function_exists( 'expert_browser_ai_enabled' ) && expert_browser_ai_enabled() ) {
+		return expert_browser_web_discover( $topic );
+	}
 	$base = expert_config()['discovery_url'];
 	if ( ! expert_loopback_url( $base ) ) {
 		return expert_error( 'discovery_not_configured' );
@@ -181,4 +184,28 @@ function expert_discover( $topic ) {
 		return expert_error( 'discovery_shape' );
 	}
 	return array_slice( $data['results'], 0, expert_limits()['candidates'] );
+}
+
+/** Free public discovery for browser-local mode; inference remains on the member device. */
+function expert_browser_web_discover( $topic ) {
+	$url      = 'https://www.bing.com/search?format=rss&q=' . rawurlencode( $topic );
+	$response = wp_safe_remote_get( $url, array( 'timeout' => 12, 'redirection' => 0, 'limit_response_size' => 131072, 'user-agent' => 'Expert/' . EXPERT_VERSION ) );
+	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+		return expert_error( 'discovery_unavailable' );
+	}
+	$xml = simplexml_load_string( wp_remote_retrieve_body( $response ), 'SimpleXMLElement', LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING );
+	if ( ! $xml || empty( $xml->channel->item ) ) {
+		return expert_error( 'discovery_shape' );
+	}
+	$results = array();
+	foreach ( $xml->channel->item as $item ) {
+		$link = esc_url_raw( (string) $item->link );
+		if ( expert_public_url( $link ) ) {
+			$results[] = array( 'url' => $link, 'title' => sanitize_text_field( (string) $item->title ) );
+		}
+		if ( count( $results ) >= expert_limits()['candidates'] ) {
+			break;
+		}
+	}
+	return $results;
 }
