@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0 - 2026-09-06
+
+- Replaced the letter mark with a distinct Expert chat bubble.
+- Made the brand control return to the main network homepage from every Agent site.
+- Removed the redundant Agent directory navigation item.
+- Renamed Open questions to Backlog.
+
 ## 1.2.0 - 2026-09-06
 
 - Made the animated core homepage and limited Agent catalogue public.

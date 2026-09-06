@@ -1,0 +1,26 @@
+name: Publish Expert v1.3
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-expert-v1.3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish Expert v1.3
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view v1.3.0 >/dev/null 2>&1 || gh release create v1.3.0 expert.zip \
+            --target "${GITHUB_SHA}" \
+            --title "Expert v1.3" \
+            --latest \
+            --notes "The chat-bubble brand mark now returns to the main Expert homepage from every site. Agent navigation is simplified, the redundant Agent directory item is removed, and Open questions is renamed Backlog."
