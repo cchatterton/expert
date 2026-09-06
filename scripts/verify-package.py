@@ -5,6 +5,7 @@ import zipfile
 from pathlib import Path
 with zipfile.ZipFile(sys.argv[1]) as archive:
     files = set(archive.namelist())
+    assert 'expert/' in files, 'explicit expert/ directory entry'
     for required in ('style.css', 'functions.php', 'index.php', 'screenshot.png', 'LICENSE', 'readme.txt', 'readme.md'):
         assert f'expert/{required}' in files, required
     assert all(name.startswith('expert/') for name in files)
