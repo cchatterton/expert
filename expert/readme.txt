@@ -3,7 +3,7 @@ Tags: education, knowledge, multisite
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,9 @@ Local service operators control their own terms, logs and privacy practices.
 No AI data is sent to GitHub. No remote analytics, fonts or advertising scripts load.
 
 == Changelog ==
+= 1.6.1 =
+* Clears obsolete server-runtime errors after upgrading to browser-local AI.
+
 = 1.6.0 =
 * Added opt-in browser-local AI for grounded chat and persistent learning on this shared-hosting architecture.
 

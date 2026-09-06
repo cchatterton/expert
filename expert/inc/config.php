@@ -51,7 +51,7 @@ function expert_is_agent() {
 	return expert_active() && ! is_main_site() && (bool) get_option( 'expert_agent' );
 }
 function expert_state() {
-	return wp_parse_args(
+	$state = wp_parse_args(
 		get_option( 'expert_state', array() ),
 		array(
 			'mode'           => 'Growth',
@@ -68,6 +68,11 @@ function expert_state() {
 			'trend'          => 0,
 		)
 	);
+	if ( function_exists( 'expert_browser_ai_enabled' ) && expert_browser_ai_enabled() && 'Error' === $state['mode'] ) {
+		$state['mode']     = $state['paused'] ? 'Paused' : 'Growth';
+		$state['failures'] = 0;
+	}
+	return $state;
 }
 function expert_error( $code, $message = '' ) {
 	return new WP_Error( $code, $message ?: __( 'This action could not be completed. Please try again later.', 'expert' ) );

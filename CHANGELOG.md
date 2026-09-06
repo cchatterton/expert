@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.1 - 2026-09-06
+
+- Clear legacy server-runtime failures after upgrading to browser-local AI.
+- Show Growth and Waiting for local AI instead of a stale Error and Needs attention state.
+
 ## 1.6.0 - 2026-09-06
 
 - Added explicit per-device consent for private browser-local AI.

@@ -1,4 +1,4 @@
 {
-  "version": "1.6.0",
-  "body": "Adds opt-in browser-local AI for grounded Agent chat and persistent learning, with WordPress-owned memory and clear learning-station status."
+  "version": "1.6.1",
+  "body": "Clears obsolete server-runtime error state after upgrading to browser-local AI."
 }

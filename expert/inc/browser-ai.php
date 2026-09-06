@@ -8,6 +8,19 @@ function expert_browser_ai_enabled() {
 	return true;
 }
 
+/** Remove error state left behind by the retired server-side runtime. */
+function expert_browser_migrate_legacy_state() {
+	$stored = get_option( 'expert_state', array() );
+	if ( is_array( $stored ) && 'Error' === ( $stored['mode'] ?? '' ) ) {
+		$stored['mode']     = ! empty( $stored['paused'] ) ? 'Paused' : 'Growth';
+		$stored['failures'] = 0;
+		$stored['next_loop'] = time();
+		update_option( 'expert_state', $stored, false );
+	}
+	delete_option( 'expert_index_error' );
+}
+add_action( 'init', 'expert_browser_migrate_legacy_state', 1 );
+
 function expert_browser_evidence( $query = '', $limit = 6 ) {
 	$args = array(
 		'post_type'      => array( 'post', 'expert_source', 'expert_faq', 'expert_subject' ),
